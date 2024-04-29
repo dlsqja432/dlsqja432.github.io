@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부평동 소개</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        a { text-decoration: none; color: #333; }
+        ul { list-style-type: none; }
+        body { width: 100%; overflow-x: hidden; }
+        .clr-fix { clear: both; }
+        .clr-fix::after { content: ""; display: block; width: 100%; clear: both; }
+
+        #hd { width: 100%; height: 230px; position: relative; }
+        #first_line { background-color: rgba(0, 0, 0, .04); padding: 10px 200px; text-align: right; }
+        #hd_title { display: block; text-align: center; font-size: 40px; font-weight: bold; 
+            line-height: 100px; float: right; padding-right: 450px; }
+        .hd_wrap { clear: both; width: 1200px; margin: 0 auto; }
+        #gnb { width: 1200px; margin: 15px auto; }
+        #gnb::after { content: ""; display: block; width: 100%; clear: both; }
+        .menu { width: 1200px; }
+        .menu .item { float: left; width: 234px; line-height: 32px;
+            text-align: center; padding: 8px 0; font-size: 24px; font-weight: bold;
+            border-bottom: 3px solid #004691; margin-right: 6px; position: relative;}
+        .menu .sub_menu { display: none; position: absolute; top: 38px; left: 0px;
+            padding: 0; width: 100%; z-index: 999; }
+        .menu:hover .sub_menu { display: block; }
+        .menu .sub_menu li { margin:15px 0; padding:5px 0; line-height: 32px;
+            width: 100%; background-color: #659ffc; border-radius: 8px; color: aliceblue;}
+        .menu .sub_menu li a { color : white; font-size: 18px; font-weight: 200;}
+        .menu .sub_menu li:hover { background-color: deepskyblue; cursor: pointer;}
+        .page_title { text-align: center; padding-top: 2em; padding-bottom: 0.5em; }
+
+        .breadcrumb {
+            list-style: none;
+            padding: 15px;
+            margin: 0;
+        }
+        .breadcrumb li {
+            display: inline;
+        }
+        .breadcrumb li:not(:last-child):after {
+            content: "/";
+            margin: 0 5px;
+        }
+        .breadcrumb li a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .breadcrumb li a:hover {
+            text-decoration: underline;
+        }
+
+        #contents { width: 100%; }
+        #vs { clear:both; width:1200px; height:500px; overflow:hidden; margin: 0 auto;}
+        #vs img { display: inline; width:100%; height:auto; margin-top:-250px;}
+
+        .page { clear:both; width:1200px; min-height:100vh; margin:0 auto; margin-top:20px;}
+        .page::after { content: ""; display: block; width: 100%; clear: both; }
+        .page_title { text-align: center; padding-top: 2em; padding-bottom: 0.5em; }
+        #page1, #page2 { background-color:#ececec; min-height:calc(100vh - 100px); }
+        #page2 { margin-bottom: 10px; }
+        .recommend { width:450px; height:500px; 
+            padding:15px; margin:40px 60px; box-shadow:0px 0px 40px #666;
+            float:left; border-bottom-right-radius: 80px; position: relative;}
+        .recommend p { text-align: center; font-size: 20px; font-weight: bold; }
+        .re_wrap { width:100%; clear:both; }	
+        .re_wrap:after { content:""; display: block; width:100%; clear:both; }
+        .subtitle { text-align:center; z-index:3}
+        .pos_box article { width:80px; height: 80px;
+                text-align: center; border-radius:50px 50px 0px 50px; position:absolute; }
+        article.art1 { background-color:#ffff9c; top:-15px; left:150px; z-index:2; filter:opacity(60%);} 
+        article.art2 { background-color:#afebff; top:-15px; right:-360px; z-index:2; filter:opacity(60%);} 
+        .img_item { display:block; width:400px; height:auto; margin:30px auto;}
+
+        .tb_wrap { clear:both; width: 1200px; margin: 10px auto; padding-bottom: 20px; 
+            margin-bottom: 20px; }
+        .tb_wrap:after { content:""; display:block; width: 100%; clear:both; }
+        .table { display:table; border-collapse: collapse; width:960px; 
+            margin:10px auto; }
+        .table tr { display:table-row; height: 50px; }
+        .table td, .table th { display:table-cell; font-size:16px; }
+        .table td { line-height: 32px; border-bottom:1px solid #333; }
+        .table td:first-child, .table td:last-child { text-align:center; }
+        .table th { line-height: 36px; background-color:#333; color:#fff; }
+        .table td:nth-child(2) { width:800px; }
+        .table a.n_tit { display:block; width: 760px; padding: 0 20px; 
+            white-space:nowrap; text-overflow: ellipsis; overflow:hidden; 
+            font-weight: bold; }
+        .table a.n_tit:hover { text-decoration: underline; color:deepskyblue; }
+
+        .ft_wrap { width:1400px; margin:30px auto; }
+        #fnb { width:800px; height:48px; float:left; }
+        #fnb ul { list-style:none; margin:0px; padding:0px; clear:both; height:48px; }
+        #fnb li { float:left; width:150px; text-align:left; line-height:48px; }
+        #fnb li a { color:#fff; }
+        #loc { width:100px; height:30px; line-height:30px; margin-top:10px; float:right; }
+        #copyright { clear:both; margin-top:18px; width:100%; }
+        #ft {
+            position: relative;
+            padding: 5px 0;
+            background: linear-gradient(110deg, #afebff 79.5% , #ffff9c  60%);
+            border-top: 3px solid #004691;
+            color: #000000;
+        }
+        #fnb ul li a { color:#000; }
+    </style>
+</head>
+<body>
+    <header id="hd" class="clr-fix">
+        <div id="first_line">
+            <a href="login.html">로그인 </a> / 
+            <a href="join.html"> 회원가입</a>
+        </div>
+        <div class="hd_wrap">
+            <a href="index.html"><img src="images/Logo.png" alt="로고"></a>
+            <span id="hd_title">부평동에 어서오세요</span>
+        </div>
+        <nav id="gnb">
+            <ul class="menu">
+                <li class="item">
+                    <a href="" class="dp1">Intro</a>
+                    <ul class="sub_menu">
+                        <li><a href="">지명유래</a></li>
+                        <li><a href="">지역특징</a></li>
+                        <li><a href="">연혁</a></li>
+                        <li><a href="">오시는길</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">Tour</a>
+                    <ul class="sub_menu">
+                        <li><a href="">교통편 안내</a></li>
+                        <li><a href="">주요 빌딩 안내</a></li>
+                        <li><a href="food.html">맛집 안내</a></li>
+                        <li><a href="">숙박 시설 안내</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">Community</a>
+                    <ul class="sub_menu">
+                        <li><a href="noticeList.html">공지사항</a></li>
+                        <li><a href="">묻고 답하기</a></li>
+                        <li><a href="">자료실</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">Membership</a>
+                    <ul class="sub_menu">
+                        <li><a href="">회원 약관</a></li>
+                        <li><a href="">개인정보 처리 방침</a></li>
+                        <li><a href="">회원 가입</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">AboutMe</a>
+                    <ul class="sub_menu">
+                        <li><a href="">운영자 소개</a></li>
+                        <li><a href="">인사말</a></li>
+                        <li><a href="">사이트 이력</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="contents" class="clr-fix">
+        <section class="page" id="page2">
+            <ol class="breadcrumb">
+                <li><a href="main.html">Home</a></li>
+                <li><a href="#">Community</a></li>
+                <li>공지사항</li>
+            </ol>
+            <h2 class="page_title">공지사항</h2>
+            <div class="tb_wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>연번</th>
+                            <th>제목</th>
+                            <th>작성일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10</td>
+                            <td><a href="" class="n_tit">게시글 10 게시글 10 게시글 10 게시글 10 게시글 10 게시글 10 게시글 10 게시글 10게시글 10 게시글 10 게시글 10 게시글 10게시글 10 게시글 10 게시글 10 게시글 10 게시글 10 게시글 10 게시글 10 게시글 10</a></td>
+                            <td>2024-04-20</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><a href="" class="n_tit">게시글 9 게시글 9 게시글 9 게시글 9게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9 게시글 9</a></td>
+                            <td>2024-04-19</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><a href="" class="n_tit">게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8 게시글 8게시글 8 게시글 8 게시글 8 게시글 8</a></td>
+                            <td>2024-04-18</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><a href="" class="n_tit">게시글 7</a></td>
+                            <td>2024-04-17</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><a href="" class="n_tit">게시글 6</a></td>
+                            <td>2024-04-16</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><a href="" class="n_tit">게시글 5</a></td>
+                            <td>2024-04-14</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><a href="" class="n_tit">게시글 4</a></td>
+                            <td>2024-04-13</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><a href="" class="n_tit">게시글 3</a></td>
+                            <td>2024-04-12</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><a href="" class="n_tit">게시글 2</a></td>
+                            <td>2024-04-11</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><a href="" class="n_tit">게시글 1</a></td>
+                            <td>2024-04-10</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer id="ft" class="clr-fix">
+        <div class="ft_wrap">
+            <nav id="fnb">
+                <ul>
+                    <li><a href="${hpath }/member/terms.jsp">회원약관</a></li>
+                    <li><a href="${hpath }/member/policy.jsp">개인정보처리방침</a></li>
+                </ul>
+            </nav>
+            <div id="loc">
+                <select name="sel" id="sel" onchange="locate()">
+                    <option value="">해당 관공서</option>
+                    <option value="https://jejumaeul.or.kr/list4/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=9281354&t=board">부평주민센터</option>
+                    <option value="https://www.jjpolice.go.kr/dongbu/info/police/police8">부평파출소</option>
+                    <option value="https://ijto.or.kr/korean/">부평관광공사</option>
+                </select>
+            </div>
+            <script>
+            function locate(){
+                var sel = document.getElementById("sel");
+                if(sel.value!=""){
+                    window.open(sel.value);
+                }
+            }
+            </script>
+            <br><br>
+            <div id="copyright">
+                <p class="addr">[21354] 인천광역시 부평구 부평대로 168 (대표전화) ☎032-504-2114 </p>
+                <p class="copy">COPYRIGHT(C) INCHEON BUPYEONG INTRO. ALL RIGHTS RESERVED.</p>
+            </div>
+        </div> 
+    </footer>
+</body>
+</html>

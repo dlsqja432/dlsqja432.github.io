@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부평동 소개</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        a { text-decoration: none; color: #333; }
+        ul { list-style-type: none; }
+        body { width: 100%; overflow-x: hidden; }
+        .clr-fix { clear: both; }
+        .clr-fix::after { content: ""; display: block; width: 100%; clear: both; }
+
+        #hd { width: 100%; height: 230px; position: relative; }
+        #first_line { background-color: rgba(0, 0, 0, .04); padding: 10px 200px; text-align: right; }
+        #hd_title { display: block; text-align: center; font-size: 40px; font-weight: bold; 
+            line-height: 100px; float: right; padding-right: 450px; }
+        .hd_wrap { clear: both; width: 1200px; margin: 0 auto; }
+        #gnb { width: 1200px; margin: 15px auto; }
+        #gnb::after { content: ""; display: block; width: 100%; clear: both; }
+        .menu { width: 1200px; }
+        .menu .item { float: left; width: 234px; line-height: 32px; 
+            text-align: center; padding: 8px 0; font-size: 24px; font-weight: bold;
+            border-bottom: 3px solid #004691; margin-right: 6px; position: relative;}
+        .menu .sub_menu { display: none; position: absolute; top: 38px; left: 0px;
+            padding: 0; width: 100%; z-index: 999; }
+        .menu:hover .sub_menu { display: block; }
+        .menu .sub_menu li { margin:15px 0; padding:5px 0; line-height: 32px;
+            width: 100%; background-color: #659ffc; border-radius: 8px; color: aliceblue;}
+        .menu .sub_menu li a { color : white; font-size: 18px; font-weight: 200;}
+        .menu .sub_menu li:hover { background-color: deepskyblue; }
+        .page_title { text-align: center; padding-top: 2em; padding-bottom: 0.5em; }
+
+        .breadcrumb {
+            list-style: none;
+            padding: 15px;
+            margin: 0;
+        }
+        .breadcrumb li {
+            display: inline;
+        }
+        .breadcrumb li:not(:last-child):after {
+            content: "/";
+            margin: 0 5px;
+        }
+        .breadcrumb li a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .breadcrumb li a:hover {
+            text-decoration: underline;
+        }
+
+        #contents { width: 100%; }
+        .page { clear:both; width:1200px; min-height:100vh; margin:0 auto; margin-top:20px;}
+        .page::after { content: ""; display: block; width: 100%; clear: both; }
+        .page_title { text-align: center; padding-top: 2em; padding-bottom: 0.5em; }
+        #page1 { background-color:#ececec; min-height:calc(100vh - 150px); margin-bottom: 10px;}
+
+        #search { width: 1200px; height: 100px; text-align: center;
+            line-height: 100px; background-color: #ccc}
+        #search #inp1 { width: 100px; height: 40px; padding-left: 10px; font-size: 16px;
+            border-radius: 8px; border-style: none; } 
+        #search #inp2 { width: 500px; height: 40px; padding-left: 10px; font-size: 16px;
+            border-radius: 8px; border-style: none; } 
+
+        .tb_wrap { clear:both; width: 1200px; margin: 10px auto; padding-bottom: 20px; 
+            margin-bottom: 20px; }
+        .tb_wrap:after { content:""; display:block; width: 100%; clear:both; }
+        .table { display:table; width:1080px; border-spacing: 30px;
+            margin:10px auto; }
+        .table tr { display:table-row; }
+        .table td, .table th { display:table-cell; font-size:18px; }
+        .table td:first-child { text-align:center; }
+        .table td:last-child { text-align: left; padding-left: 100px; border-bottom: 1px solid #333;}
+        .table td a { color: deepskyblue; text-decoration: underline; }
+        .table th {padding: 15px 0px;}
+        .table th img { width: 250px; height: 200px; padding-left: 60px;}
+        .table td:nth-child(2) { width:800px; }
+        .btn { width: 102px; height: 40px; text-align: center; margin: 10px; border-radius: 15px; 
+            background-color: #ffff9c; border-style: hidden; cursor: pointer; font-size: 16px;
+            font-weight: bold;}
+        .btn:hover { background-color: #afebff; }
+        .btn#btn2 { margin-left: 100px; font-weight: bold; }
+
+        .ft_wrap { width:1400px; margin:30px auto; }
+        #fnb { width:800px; height:48px; float:left; }
+        #fnb ul { list-style:none; margin:0px; padding:0px; clear:both; height:48px; }
+        #fnb li { float:left; width:150px; text-align:left; line-height:48px; }
+        #fnb li a { color:#fff; }
+        #loc { width:100px; height:30px; line-height:30px; margin-top:10px; float:right; }
+        #copyright { clear:both; margin-top:18px; width:100%; }
+        #ft {
+            position: relative;
+            padding: 5px 0;
+            background: linear-gradient(110deg, #afebff 79.5% , #ffff9c  60%);
+            border-top: 3px solid #004691;
+            color: #000000;
+        }
+        #fnb ul li a { color:#000; }
+    </style>
+</head>
+<body>
+    <header id="hd" class="clr-fix">
+        <div id="first_line">
+            <a href="login.html">로그인 </a> / 
+            <a href="join.html"> 회원가입</a>
+        </div>
+        <div class="hd_wrap">
+            <a href="index.html"><img src="images/Logo.png" alt="로고"></a>
+            <span id="hd_title">부평동에 어서오세요</span>
+        </div>
+        <nav id="gnb">
+            <ul class="menu">
+                <li class="item">
+                    <a href="" class="dp1">Intro</a>
+                    <ul class="sub_menu">
+                        <li><a href="">지명유래</a></li>
+                        <li><a href="">지역특징</a></li>
+                        <li><a href="">연혁</a></li>
+                        <li><a href="">오시는길</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">Tour</a>
+                    <ul class="sub_menu">
+                        <li><a href="">교통편 안내</a></li>
+                        <li><a href="">주요 빌딩 안내</a></li>
+                        <li><a href="food.html">맛집 안내</a></li>
+                        <li><a href="">숙박 시설 안내</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">Community</a>
+                    <ul class="sub_menu">
+                        <li><a href="noticeList.html">공지사항</a></li>
+                        <li><a href="">묻고 답하기</a></li>
+                        <li><a href="">자료실</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">Membership</a>
+                    <ul class="sub_menu">
+                        <li><a href="">회원 약관</a></li>
+                        <li><a href="">개인정보 처리 방침</a></li>
+                        <li><a href="">회원 가입</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <a href="" class="dp1">AboutMe</a>
+                    <ul class="sub_menu">
+                        <li><a href="">운영자 소개</a></li>
+                        <li><a href="">인사말</a></li>
+                        <li><a href="">사이트 이력</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="contents" class="clr-fix">
+        <section class="page" id="page1">
+            <ol class="breadcrumb">
+                <li><a href="main.html">Home</a></li>
+                <li><a href="#">Tour</a></li>
+                <li>맛집안내</li>
+            </ol>
+            <h2 class="page_title">맛집 안내</h2>
+            <div class="tb_wrap">
+                <div id="search">
+                    <input type="text" id="inp1" value="제목" readonly>
+                    <input type="text" id="inp2">
+                    <button type="button" class="btn" id="search_btn">검색</button>
+                </div>
+                <table class="table" >
+                    <tbody>
+                        <tr>
+                            <th><img src="images/food1.png" alt=""></th>
+                            <td>
+                                <p><strong>가게명</strong> : 오구당당 본점<br>
+                                <strong>주소</strong> : 인천광역시 부평구 부평1동 경원대로1377번길 47 1층<br>
+                                <strong>영업 시간</strong> : 오전 11:20 ~ 오후 9:20<br>
+                                <strong>홈페이지</strong> : <a href="#">오구당당.com</a><br>
+                                <strong>전화번호</strong> : 032-505-3388
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><img src="images/food2.png" alt=""></th>
+                            <td>
+                                <p><strong>가게명</strong> : 부평화미삼겹살(화미소금구이)<br>
+                                <strong>주소</strong> : 인천광역시 부평구 부평1동 부흥로 249-13<br>
+                                <strong>영업 시간</strong> : 월~토(오전 11:30 ~ 오후 10:00) 일(오전 11:30 ~ 오후 9:30)<br>
+                                <strong>홈페이지</strong> : <a href="#">화미삼겹살.com</a><br>
+                                <strong>전화번호</strong> : 032-521-0600
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><img src="images/food3.png" alt=""></th>
+                            <td>
+                                <p><strong>가게명</strong> : 소문난밥상<br>
+                                <strong>주소</strong> : 인천광역시 부평구 부평동 378-3<br>
+                                <strong>영업 시간</strong> : 월~일(오전 9:30 ~ 오후 9:30) 토(오전 9:30 ~ 오후 10:30)<br>
+                                <strong>홈페이지</strong> : <a href="#">소문난밥상.com</a><br>
+                                <strong>전화번호</strong> : 032-511-9214
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><img src="images/food4.png" alt=""></th>
+                            <td>
+                                <p><strong>가게명</strong> : 해민면옥<br>
+                                <strong>주소</strong> : 인천광역시 부평구 부평대로38번길 4 1층<br>
+                                <strong>영업 시간</strong> : 오전 11:00 ~ 오후 9:00<br>
+                                <strong>홈페이지</strong> : <a href="#">해민면옥.com</a><br>
+                                <strong>전화번호</strong> : 032-501-9612
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><img src="images/food5.png" alt=""></th>
+                            <td>
+                                <p><strong>가게명</strong> : 돈스갈비찜<br>
+                                <strong>주소</strong> : 인천광역시 부평구 부평5동 151-2 1층<br>
+                                <strong>영업 시간</strong> : 오후 12:00 ~ 오후 10:00<br>
+                                <strong>홈페이지</strong> : <a href="#">돈스갈비찜.com</a><br>
+                                <strong>전화번호</strong> : 032-531-7953
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><img src="images/food6.png" alt=""></th>
+                            <td>
+                                <p><strong>가게명</strong> : 더히든키친<br>
+                                <strong>주소</strong> : 인천광역시 부평구 부평동 신트리로22번길 15-14<br>
+                                <strong>영업 시간</strong> : 월,화 휴무, 수~목(오전 10:00 ~ 오후 3:00) 금~일(오전 10:00 ~ 오후 9:00)<br>
+                                <strong>홈페이지</strong> : <a href="#">더히든키친.com</a><br>
+                                <strong>전화번호</strong> : 032-272-7276
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer id="ft" class="clr-fix">
+        <div class="ft_wrap">
+            <nav id="fnb">
+                <ul>
+                    <li><a href="${hpath }/member/terms.jsp">회원약관</a></li>
+                    <li><a href="${hpath }/member/policy.jsp">개인정보처리방침</a></li>
+                </ul>
+            </nav>
+            <div id="loc">
+                <select name="sel" id="sel" onchange="locate()">
+                    <option value="">해당 관공서</option>
+                    <option value="https://jejumaeul.or.kr/list4/?q=YToxOntzOjEyOiJrZXl3b3JkX3R5cGUiO3M6MzoiYWxsIjt9&bmode=view&idx=9281354&t=board">부평주민센터</option>
+                    <option value="https://www.jjpolice.go.kr/dongbu/info/police/police8">부평파출소</option>
+                    <option value="https://ijto.or.kr/korean/">부평관광공사</option>
+                </select>
+            </div>
+            <script>
+            function locate(){
+                var sel = document.getElementById("sel");
+                if(sel.value!=""){
+                    window.open(sel.value);
+                }
+            }
+            </script>
+            <br><br>
+            <div id="copyright">
+                <p class="addr">[21354] 인천광역시 부평구 부평대로 168 (대표전화) ☎032-504-2114 </p>
+                <p class="copy">COPYRIGHT(C) INCHEON BUPYEONG INTRO. ALL RIGHTS RESERVED.</p>
+            </div>
+        </div> 
+    </footer>
+</body>
+</html>
