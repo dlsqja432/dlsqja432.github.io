@@ -4,38 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>부평동 소개</title>
+    <link rel="stylesheet" href="normalize2.css">
+    <link rel="stylesheet" href="common.css">
     <style>
-        * { margin: 0; padding: 0; }
-        a { text-decoration: none; color: #333; }
-        ul { list-style-type: none; }
-        body { width: 100%; overflow-x: hidden; }
-        .clr-fix { clear: both; }
-        .clr-fix::after { content: ""; display: block; width: 100%; clear: both; }
-
-        #hd { width: 100%; height: 230px; position: relative; }
-        #first_line { background-color: rgba(0, 0, 0, .04); padding: 10px 200px; text-align: right; }
-        #hd_title { display: block; text-align: center; font-size: 40px; font-weight: bold; 
-            line-height: 100px; float: right; padding-right: 450px; }
-        .hd_wrap { clear: both; width: 1200px; margin: 0 auto; }
-        #gnb { width: 1200px; margin: 15px auto; }
-        #gnb::after { content: ""; display: block; width: 100%; clear: both; }
-        .menu { width: 1200px; }
-        .menu .item { float: left; width: 234px; line-height: 32px; 
-            text-align: center; padding: 8px 0; font-size: 24px; font-weight: bold;
-            border-bottom: 3px solid #004691; margin-right: 6px; position: relative;}
-        .menu .sub_menu { display: none; position: absolute; top: 38px; left: 0px;
-            padding: 0; width: 100%; z-index: 999; }
-        .menu:hover .sub_menu { display: block; }
-        .menu .sub_menu li { margin:15px 0; padding:5px 0; line-height: 32px;
-            width: 100%; background-color: #659ffc; border-radius: 8px; color: aliceblue;}
-        .menu .sub_menu li a { color : white; font-size: 18px; font-weight: 200;}
-        .menu .sub_menu li:hover { background-color: deepskyblue; }
-        .page_title { text-align: center; padding-top: 2em; padding-bottom: 0.5em; }
-
         .breadcrumb {
             list-style: none;
+            width: 920px;
             padding: 15px;
             margin: 0;
+            border-top: 2px solid #ececec;
         }
         .breadcrumb li {
             display: inline;
@@ -80,22 +57,6 @@
             font-weight: bold;}
         .btn:hover { background-color: #afebff; }
         .btn#btn2 { margin-left: 100px; font-weight: bold; }
-
-        .ft_wrap { width:1400px; margin:30px auto; }
-        #fnb { width:800px; height:48px; float:left; }
-        #fnb ul { list-style:none; margin:0px; padding:0px; clear:both; height:48px; }
-        #fnb li { float:left; width:150px; text-align:left; line-height:48px; }
-        #fnb li a { color:#fff; }
-        #loc { width:100px; height:30px; line-height:30px; margin-top:10px; float:right; }
-        #copyright { clear:both; margin-top:18px; width:100%; }
-        #ft {
-            position: relative;
-            padding: 5px 0;
-            background: linear-gradient(110deg, #afebff 79.5% , #ffff9c  60%);
-            border-top: 3px solid #004691;
-            color: #000000;
-        }
-        #fnb ul li a { color:#000; }
     </style>
 </head>
 <body>
@@ -105,7 +66,7 @@
             <a href="join.html"> 회원가입</a>
         </div>
         <div class="hd_wrap">
-            <a href="main.html"><img src="images/Logo.png" alt="로고"></a>
+            <a href="index.html"><img src="images/Logo.png" alt="로고"></a>
             <span id="hd_title">부평동에 어서오세요</span>
         </div>
         <nav id="gnb">
@@ -139,7 +100,7 @@
                 <li class="item">
                     <a href="" class="dp1">커뮤니티</a>
                     <ul class="sub_menu">
-                        <li><a href="">공지사항</a></li>
+                        <li><a href="noticeList.html">공지사항</a></li>
                         <li><a href="">자유게시판</a></li>
                         <li><a href="">자료실</a></li>
                         <li><a href="">묻고 답하기</a></li>

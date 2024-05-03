@@ -34,6 +34,13 @@ ul { list-style-type: none; }
 .img_box li { float: left; }
 */
 
+#side_bar { width: 250px; min-height: 100vh; border: 2px solid #333; float: left;
+    border: 1px solid #ececec; }
+#side_bar_title { width: 100%; height: 170px; line-height: 170px;
+    text-align: center; font-size: 32px; font-weight: bold; background-color: #afebff; }
+#side_bar li { width: 240px; height: 50px; padding-left: 10px; font-size: 16px;
+    line-height: 50px; border-bottom: 2px solid #ececec; }
+
 .ft_wrap { width:1400px; margin:30px auto ; }
 #fnb { width:800px; height:48px; float:left; }
 #fnb ul { list-style:none; margin:0px; padding:0px; clear:both; height:48px; }
