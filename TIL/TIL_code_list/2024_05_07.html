@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../css/TIL_style.css">
+  <title>Title</title>
+</head>
+<body>
+  <section class="ftco-section">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section">2024년 5월 7일</h2>
+      </div>
+    </div>
+    <div class="remote"><button onclick="goBack()" class="btn btn-primary">뒤로가기</button></div>
+    <div class="position-center">
+      <div class="code-area">
+        <h4 class="code-head">컴포넌트 스캔과 의존관계 자동 주입</h4>
+        <ul>
+          <li>지금까지 스프링 빈을 등록할 때는 자바 코드의 @Bean이나 XML의 <bean>등을 통해서 설정 정보에 직접 등록할 스프링 빈을 나열했다.</li>
+          <li>등록해야 할 빈이 많아지면 등록하기도 귀찮고, 설정 정보도 커지고 누락하는 문제도 발생한다.</li>
+          <li>그래서 스프링은 설정 정보가 없어도 자동으로 스프링 빈을 등록하는 컴포넌트 스캔이라는 기능을 제공한다.</li>
+          <li>또 의존관계도 자동으로 주입하는 @Autowired 라는 기능도 제공한다.</li>
+        </ul>
+        <xmp class="code-text">
+          //AutoAppConfig.java
+          //컴포넌트 스캔을 사용하려면 먼저 @ComponentScan 을 설정 정보에 붙여주면 된다.
+          //기존의 AppConfig와는 다르게 @Bean으로 등록한 클래스가 하나도 없다.
+          @Configuration
+          @ComponentScan(
+              excludeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Configuration.class)
+          )
+          public class AutoAppConfig {
+
+          }
+
+          //컴포넌트 스캔은 이름 그대로 @Component 애노테이션이 붙은 클래스를 스캔해서 스프링 빈으로 등록한다.
+          //각 클래스가 컴포넌트 스캔의 대상이 되도록 @Component 애노테이션을 붙인다.
+          //MemoryMemberRepository
+          @Component
+          public class MemoryMemberRepository implements MemberRepository {}
+
+          //RateDiscountPolicy
+          @Component
+          public class RateDiscountPolicy implements DiscountPolicy {}
+          
+          //MemberServiceImpl
+          @Component
+              public class MemberServiceImpl implements MemberService {
+              private final MemberRepository memberRepository;
+
+              //이전에 AppConfig에서는 @Bean 으로 직접 설정 정보를 작성했고, 의존관계도 직접 명시했다. 
+              //이제는 이런 설정 정보 자체가 없기 때문에, 의존관계 주입도 이 클래스 안에서 해결해야 한다.
+              //@Autowired 는 의존관계를 자동으로 주입해준다.
+              @Autowired
+              public MemberServiceImpl(MemberRepository memberRepository) {
+              this.memberRepository = memberRepository;
+              }
+          }
+
+          //OrderServiceImpl
+          @Component
+          public class OrderServiceImpl implements OrderService {
+              private final MemberRepository memberRepository;
+              private final DiscountPolicy discountPolicy;
+
+              //Autowired를 사용하면 생성자에서 여러 의존관계도 한번에 주입받을 수 있다.
+              @Autowired
+              public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+                  this.memberRepository = memberRepository;
+                  this.discountPolicy = discountPolicy;
+              }
+          }
+        </xmp>
+        <h4 class="code-head">컴포넌트 스캔과 자동 의존관계 주입의 동작</h4>
+        <p>1. @ComponentScan</p>
+        <table class="table">
+          <caption>스프링 빈 저장소</caption>
+          <thead>
+              <tr>
+              <th>빈 이름</th>
+              <th>빈 객체</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>memberServiceImpl</td>
+              <td>MemberServiceImpl@x01</td>
+            </tr>
+            <tr>
+              <td>orderServiceImpl</td>
+              <td>OrderServiceImpl@x02</td>
+            </tr>
+            <tr>
+              <td>memoryMemberRepository</td>
+              <td>MemoryMemberRepository@x03</td>
+            </tr>
+            <tr>
+              <td>rateDiscountPolicy</td>
+              <td>RateDiscountPolicy@x04</td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>@ComponentScan 은 @Component 가 붙은 모든 클래스를 스프링 빈으로 등록한다.</li>
+          <li>
+            이때 스프링 빈의 기본 이름은 클래스명을 사용하되 맨 앞글자만 소문자를 사용한다.
+            <ul>
+              <li><strong>빈 이름 기본 전략:</strong> 클래스명에서 맨 앞글자를 소문자로 바꿔서 등록</li>
+              <li><strong>빈 이름 직접 지정:</strong> 만약 스프링 빈의 이름을 직접 지정하고 싶으면 @Component("memberService2") 이런식으로 이름을 부여하면 된다.</li>
+            </ul>
+          </li>
+        </ul>
+        <br><br>
+        <p>2. @Autowired 의존관계 자동 주입</p>
+        <table class="table">
+          <caption>스프링 빈 저장소</caption>
+          <thead>
+              <tr>
+              <th>빈 이름</th>
+              <th>빈 객체</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>memberServiceImpl</td>
+              <td>MemberServiceImpl@x01</td>
+            </tr>
+            <tr>
+              <td>orderServiceImpl</td>
+              <td>OrderServiceImpl@x02</td>
+            </tr>
+            <tr>
+              <td>memoryMemberRepository</td>
+              <td>MemoryMemberRepository@x03</td>
+            </tr>
+            <tr>
+              <td>rateDiscountPolicy</td>
+              <td>RateDiscountPolicy@x04</td>
+            </tr>
+          </tbody>
+          </table>
+          <ul>
+            <li>생성자에 @Autowired를 지정하면, 스프링 컨테이너가 자동으로 해당 스프링 빈을 찾아서 주입한다.</li>
+            <li>이때 기본 조회 전략은 타입이 같은 빈을 찾아서 주입한다.</li>
+          </ul>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  function goBack(){
+    window.history.back();
+  }
+</script>
+</body>
+</html>
