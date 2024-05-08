@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../css/TIL_style.css">
+  <title>Title</title>
+</head>
+<body>
+  <section class="ftco-section">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section">2024년 5월 8일</h2>
+      </div>
+    </div>
+    <div class="remote"><button onclick="goBack()" class="btn btn-primary">뒤로가기</button></div>
+    <div class="position-center">
+      <div class="code-area">
+        <h4 class="code-head">1. 탐색 위치와 기본 스캔 대상</h4>
+        <xmp class="code-text">
+//모든 자바 클래스를 다 컴포넌트 스캔하면 시간이 오래걸린다.<br>
+//그래서 꼭 필요한 위치부터 탐색하도록 시작 위치를 지정할 수 있다.
+@ComponentScan {
+    basePackages = "hello.core",
+}
+//basePackages : 탐색할 패키지의 시작 위치를 지정한다. 이 패키지를 포함해서 하위 패키지를 모두 탐색한다.
+//basePackageClasses : 지정한 클래스의 패키지를 탐색 시작 위로 지정한다.
+//만약 지정하지 않으면 @ComponentScan이 붙은 설정 정보 클래스의 패키지가 시작 위치가 된다.
+        </xmp>
+        <p><strong>권장하는 방법</strong></p>
+        <p>
+            패키지 위치를 지정하지 않고, 설정 정보 클래스의 위치를 프로젝트 최상단에 두는 것이다.<br>
+            최근 스프링 부트도 이 방법을 기본으로 제공한다.
+        </p>
+        
+        <h4 class="code-head">2. 컴포넌트 스캔 기본 대상</h4>
+        <p>컴포넌트 스캔은 @Component뿐만 아니라 다음의 내용도 추가로 대상에 포함한다.</p>
+        <ul>
+            <li>@Component : 컴포넌트 스캔에서 사용</li>
+            <li>@Controller : 스프링 MVC 컨트롤러에서 사용</li>
+            <li>@Service : 스프링 비즈니스 로직에서 사용</li>
+            <li>@Repository : 스프링 데이터 접근 계층에서 사용</li>
+            <li>@Configuration : 스프링 설정 정보에서 사용</li>
+        </ul>
+        <p>애노테이션에는 상속관계라는 것이 없다.<br> 그래서 이렇게 애노테이션이 특정 애노테이션을 들고 있는
+            것을 인식할 수 있는 것은 자바 언어가 지원하는 기능은 아니고, 스프링이 지원하는 기능이다</p>
+        <h4 class="code-head">3. 필터</h4>
+        <ul>
+            <li>includeFilters : 컴포넌트 스캔 대상을 추가로 지정한다.</li>
+            <li>excludeFilters : 컴포넌트 스캔에서 제외할 대상을 지정한다.</li>
+        </ul>
+        <h4 class="code-head">4. FilterType 옵션</h4>
+        <ul>
+            <li>ANNOTATION: 기본값, 애노테이션을 인식해서 동작한다.</li>
+            <li>
+                <ul>
+                    <li>ex) org.example.SomeAnnotation</li>
+                </ul>
+            </li>
+            <li>ASSIGNABLE_TYPE: 지정한 타입과 자식 타입을 인식해서 동작한다.</li>
+            <li>
+                <ul>
+                    <li>ex) org.example.SomeClass</li>
+                </ul>
+            </li>
+            <li>ASPECTJ: AspectJ 패턴 사용</li>
+            <li>
+                <ul>
+                    <li>ex) org.example..*Service+</li>
+                </ul>
+            </li>
+            <li>REGEX: 정규 표현식</li>
+            <li>
+                <ul>
+                    <li>ex) org\.example\.Default.*</li>
+                </ul>
+            </li>
+            <li>CUSTOM: TypeFilter 이라는 인터페이스를 구현해서 처리</li>
+            <li>
+                <ul>
+                    <li>ex) org.example.MyTypeFilter
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <xmp class="code-text">
+//BeanA도 함께 제외하는 예제
+@ComponentScan(
+includeFilters = {
+    @Filter(type = FilterType.ANNOTATION, classes = MyIncludeComponent.class),
+    }, excludeFilters = {
+        @Filter(type = FilterType.ANNOTATION, classes =
+        MyExcludeComponent.class),
+        @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = BeanA.class)
+    }
+)
+
+//@Component 면 충분하기 때문에, includeFilters 를 사용할 일은 거의 없다. 
+//excludeFilters 는 여러가지 이유로 간혹 사용할 때가 있지만 많지는 않다.
+//최근 스프링 부트는 컴포넌트 스캔을 기본으로 제공하는데, 개인적으로는 옵션을 변경하면서 사용하기 보다
+는 스프링의 기본 설정에 최대한 맞추어 사용하는 것을 권장한다.
+
+        </xmp>
+        <h4 class="code-head">5. 중복 등록과 충돌</h4>
+        <p>컴포넌트 스캔에서 같은 빈 이름을 등록하는 두가지경우</p>
+        <ol>
+            <li>자동 빈 등록 vs 자동 빈 등록</li>
+            <li>수동 빈 등록 vs 수동 빈 등록</li>
+        </ol>
+        <p>이 경우 수동 빈 등록이 우선권을 가진다.(수동 빈이 자동 빈을 오버라이딩)</p>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  function goBack(){
+    window.history.back();
+  }
+</script>
+</body>
+</html>
