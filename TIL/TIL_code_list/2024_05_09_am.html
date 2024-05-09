@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../css/TIL_style.css">
+  <title>Title</title>
+</head>
+<body>
+  <section class="ftco-section">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section">2024년 5월 7일</h2>
+      </div>
+    </div>
+    <div class="remote"><button onclick="goBack()" class="btn btn-primary">뒤로가기</button></div>
+    <div class="position-center">
+      <div class="code-area">
+        <h4 class="code-head">컨트롤러에서 @GetMapping 방법</h4>
+        <xmp class="code-text">
+//@RequestParam 을 이용하여 받는 방법
+@GetMapping("get1.do")
+public String get1(@RequestParam("num") int num,@RequestParam("title") String title, Model model) {
+    model.addAttribute("num",num);
+    model.addAttribute("title",title);
+    return "test2/get1";
+}
+
+//객체로 받는 방법
+@GetMapping("get2.do")
+public String get2(Sample sample, Model model) {
+    model.addAttribute("test", sample);
+    return "test2/get2";
+}
+
+//@ModelAttribute를 이용하여 받는 방법
+@GetMapping("get3.do")
+public String get3(@ModelAttribute("sample") Sample sample, Model model) {
+    return "test2/get3";
+}
+
+//@PathVariable을 이용하는 방법
+//파라미터로 받을 변수 명은 el로 작성해야한다.
+@GetMapping("get4.do/{num}/{title}")
+public String get4(@PathVariable("num") int num,@PathVariable("title") String title , Model model) {
+    Sample sample = new Sample(num,title, "2024-02-05");
+    model.addAttribute("sam", sample);
+    return "test2/get4";
+}
+
+//ModelAndView를 이용하는 방법
+//addAttribute대신에 addObject 메소드를 사용하고, 리턴타입을 ModelAndView로 한 뒤 setViewName으로 보낼 view를 지정해준다.
+@GetMapping("get5.do")
+public ModelAndView get5(@RequestParam("num") int num, @RequestParam("title") String title, ModelAndView mav) {
+    mav.addObject("num", num);
+    mav.addObject("title", title);
+    mav.setViewName("test2/get5");
+    return mav;
+}
+        </xmp>
+        <h4 class="code-head">컨트롤러에서 @PostMapping 방법</h4>
+        <xmp class="code-text">
+//post방식으로 데이터를 매핑하는 것이므로, view에서 form으로 데이터를 전송해야한다.
+
+//@RequestParam을 이용하는 방법
+@PostMapping("post1.do")
+public String post1(@RequestParam("num") int num, @RequestParam("title") String title, Model model) {
+    Sample sample = new Sample(num,title,"2022");
+    model.addAttribute("sample",sample);
+    return "test2/post1";
+}
+
+//객체로 받는 방법
+@PostMapping("post2.do")
+public String post2(Sample sample, Model model) {
+    model.addAttribute("sample",sample);
+    return "test2/post2";
+}
+
+//@ModelAttribute를 이용하는 방법
+@PostMapping("post3.do")
+public String post3(@ModelAttribute("sample") Sample sample, Model model) {
+    return "test2/post3";
+}
+
+//ModelAndView를 이용하는 방법
+@PostMapping("post5.do")
+public ModelAndView post5(@RequestParam("num") int num, @RequestParam("title") String title, ModelAndView mav) {
+    mav.addObject("num",num);
+    mav.addObject("title",title);
+    mav.setViewName("test2/post5");
+    return mav;
+}
+        </xmp>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  function goBack(){
+    window.history.back();
+  }
+</script>
+</body>
+</html>
