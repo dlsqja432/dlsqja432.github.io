@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../css/TIL_style.css">
+  <title>Title</title>
+</head>
+<body>
+  <section class="ftco-section">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section">2024년 5월 10일</h2>
+      </div>
+    </div>
+    <div class="remote"><button onclick="goBack()" class="btn btn-primary">뒤로가기</button></div>
+    <div class="position-center">
+      <div class="code-area">
+        <h4 class="code-head">simple-json, Gson, Jackson 비교</h4>
+        <h5>큰 JSON 파일에서의 성능</h5>
+        <P>Jackson > Simple-json > Gson</P>
+        <h5>작은 JSON 파일에서의 성능</h5>
+        <p>Gson > Simple-json > Jackson</p>
+        <p>
+          <strong>Jackson : </strong> 빅데이터 처리가 필요한 큰 사이즈의 JSON을 처리해야 하는 서비스에서 유리<br>
+          <strong>Gson : </strong> 마이크로 서비스와 분산 아키텍쳐 서비스로 작은 용량이 많은 환경에서 유리<br>
+          <strong>Simple-json : </strong> 일반적인 환경 즉 큰 파일과 작은 파일을 골고루 사용하는 곳에서 유리
+        </p>
+        <h4 class="code-head">simple-json 활용</h4>
+        <xmp class="code-text">
+          //simple-json을 활용한 JsonString -> Student
+@PostMapping("api9.do")
+public Student convertStringToStudent1(@RequestBody String jsonStr) throws ParseException {
+    JSONParser jsonParser = new JSONParser();
+    JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonStr);
+  
+    Student std = new Student(Integer.valueOf(jsonObject.get("stdNumber").toString()),
+        jsonObject.get("name").toString(),
+        Integer.valueOf(jsonObject.get("age").toString()));
+    log.info("convertStringToStudent1 response : " + std);
+    return std;
+}
+
+//simple-json을 활용한 Student -> JsonString
+@PostMapping(value="api10.do", produces="application/json;charset=UTF-8")
+public String convertStudentToString1(@RequestBody Student std) {
+    JSONObject jsonPlayer = new JSONObject();
+    jsonPlayer.put("stdNumber", std.getStdNumber());
+    jsonPlayer.put("name", std.getName());
+    jsonPlayer.put("age", std.getAge());
+    String jsonStr = jsonPlayer.toJSONString();
+    log.info("convertStudentToString1 result : " + jsonStr);
+    return jsonStr;
+}
+        </xmp>
+        <h4 class="code-head">gson 활용</h4>
+        <xmp class="code-text">
+//gson을 활용한 JsonString -> Student
+@PostMapping(value="api11.do", produces="application/json;charset=UTF-8")
+public Student convertStringToStudent2(@RequestBody String jsonStr) {
+    Gson gson = new Gson();
+    Student std = gson.fromJson(jsonStr, Student.class);
+    log.info("convertStringToString2 result : " + std);
+    return std;
+}
+
+//gson을 활용한 JsonString -> Classroom
+@PostMapping(value="api12.do", produces="application/json;charset=UTF-8")
+public Classroom convertStudentToClassrom2(@RequestBody String jsonStr) {
+    Gson gson = new Gson();
+    Classroom team = gson.fromJson(jsonStr, Classroom.class);
+    log.info("convertStringToClassroom2 result : " + team);
+    return team;
+}
+
+//gson을 황용한 Classroom -> JsonString
+@PostMapping(value="api13.do", produces="application/json;charset=UTF-8")
+public String convertClassroomToString2(@RequestBody Classroom team) {
+    Gson gson = new Gson();
+    String jsonStr = gson.toJson(team);
+    log.info("convertClassroomToString2 : " + jsonStr);
+    return jsonStr;
+}
+        </xmp>
+        <h4 class="code-head">jackson 활용</h4>
+        <xmp class="code-text">
+//jackson을 활용한 JsonString -> Classroom
+@PostMapping(value="api14.do", produces="application/json;charset=UTF-8")
+public Classroom convertStringToClassroom3(@RequestBody String jsonStr) throws JsonParseException, JsonMappingException, IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> teamMap = objectMapper.readValue(jsonStr, new TypeReference() {});
+    Classroom team = new Classroom (
+        teamMap.get("part").toString(),
+        Integer.valueOf(teamMap.get("classNum").toString()),
+        (ArrayList<Student>) teamMap.get("students"));
+    log.info("convertStringToClassroom3 result : " + team);
+    return team;
+}
+
+//jackson을 활용한 Classroom -> JsonString
+@PostMapping(value="api15.do", produces="application/json;charset=UTF-8")
+public String convertClassroomToString3(@RequestBody Classroom team) throws JsonParseException, JsonMappingException, IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    String jsonStr = objectMapper.writeValueAsString(team);
+    log.info("convertClassroomToString3 result : " + jsonStr);
+    return jsonStr;
+}
+        </xmp>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  function goBack(){
+    window.history.back();
+  }
+</script>
+</body>
+</html>
