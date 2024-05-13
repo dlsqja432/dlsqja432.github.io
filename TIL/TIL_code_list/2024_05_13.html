@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../css/TIL_style.css">
+  <title>Title</title>
+</head>
+<body>
+  <section class="ftco-section">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section">2024년 5월 10일</h2>
+      </div>
+    </div>
+    <div class="remote"><button onclick="goBack()" class="btn btn-primary">뒤로가기</button></div>
+    <div class="position-center">
+      <div class="code-area">
+        <h4 class="code-head">롬복과 최신 트렌드</h4>
+        <p>개발을 해보면, 대부분이 다 불변이고, 그래서 필드에 final 키워드를 사용하게 된다.<br>
+        그런데 생성자도 만들어야하고, 주입 받은 값을 대입하는 코드도 만들어야 하고 불편하다.
+        그래서 롬복 라이브러리를 이용한다.</p>
+        <xmp class="code-text">
+//롬복 라이브러리가 제공하는 @RequiredArgsConstructor 기능을 사용하면 final이 붙은 필드를 모아서 생성자를 자동으로 만들어준다.
+//롬복이 자바의 애노테이션 프로세서라는 기능을 이용해서 컴파일 시점에 생성자 코드를 자동으로 생성해준다.
+//실제 class를 열어보면 생성자 코드가 추가되어있다.
+//롬복 라이브러리를 사용하면 코드가 훨씬 간결해진다.
+@Component
+@RequiredArgsConstructor
+public class OrderServiceImpl implements OrderService {
+    private final MemberRepository memberRepository;
+    private final DiscountPolicy discountPolicy;
+}
+
+//최근에는 생성자를 딱 한개 두고 @Autowired를 생략하는 방법을 주로 사용한다.
+//여기에 Lombok 라이브러리의 @RequiredArgsConstructor를 함께 사용하면 기능은 다 제공하면서, 코드를 깔끔하게 사용할 수 있다.
+        </xmp>
+        <h4 class="code-head">롬복 라이브러리 적용 방법</h4>
+        <xmp class="code-text">
+build.gradle 에 라이브러리 및 환경 추가
+plugins {
+    id 'org.springframework.boot' version '2.3.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+}
+
+group = 'hello'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+//lombok 설정 추가 시작
+configurations {
+    compileOnly {
+    extendsFrom annotationProcessor
+    }
+}
+//lombok 설정 추가 끝
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    //lombok 라이브러리 추가 시작
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    //lombok 라이브러리 추가 끝
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+test {
+    useJUnitPlatform()
+}
+        </xmp>
+        <ol>
+          <li>Preferences(윈도우 File Settings) plugin lombok 검색 설치 실행 (재시작)</li>
+          <li>Preferences Annotation Processors 검색 Enable annotation processing 체크 (재시작)</li>
+          <li>임의의 테스트 클래스를 만들고 @Getter, @Setter 확인</li>
+        </ol>
+        <h4 class="code-head">조회 빈이 2개 이상</h4>
+        <p>
+          @Autowired는 타입으로 조회한다.<br>
+          타입으로 조회하기 때문에, 마치 다음 코드와 유사하게 동작한다. (실제로는 더 많은 기능을 제공함)
+        </p>
+        <xmp class="code-text">
+ac.getBean(DiscountPolicy.class)
+        </xmp>
+        <p>
+          스프링 빈 조회에서 학습했듯이 타입으로 조회하면 선택된 빈이 2개 이상일 때 문제가 발생한다.<br>
+          DiscountPolicy의 하위 타입인 FixDiscountPolicy, RateDiscountPolicy 둘 다 스프링 빈으로 선언해 보자.
+        </p>
+        <xmp class="code-text">
+@Component
+public class FixDiscountPolicy implements DiscountPolicy
+        </xmp>
+        <xmp class="code-text">
+@Component
+public class RateDiscountPolicy implements DiscountPolicy
+        </xmp>
+        <p>이 상태에서 의존관계 자동 주입을 실행하면</p>
+        <xmp class="code-text">
+@Autowired
+private DiscountPolicy discountPolicy
+
+//NoUniqueBeanDefinitionException 오류가 발생한다.
+NoUniqueBeanDefinitionException: No qualifying bean of type 
+'hello.core.discount.DiscountPolicy' available: expected single matching bean 
+but found 2: fixDiscountPolicy,rateDiscountPolicy
+        </xmp>
+        <p>
+          오류메시지가 친절하게도 하나의 빈을 기대했는데 fixDiscountPolicy , rateDiscountPolicy 2개가 발견되었다고 알려준다.<br>
+          이때 하위 타입으로 지정할 수 도 있지만, 하위 타입으로 지정하는 것은 DIP를 위배하고 유연성이 떨어진다.<br>
+          그리고 이름만 다르고, 완전히 똑같은 타입의 스프링 빈이 2개 있을 때 해결이 안된다.<br>
+          스프링 빈을 수동 등록해서 문제를 해결해도 되지만, 의존 관계 자동 주입에서 해결하는 여러 방법이 있다.
+        </p>
+        <h4 class="code-head">조회 빈이 2개 이상일 때 해결법</h4>
+        <p>조회 대상 빈이 2개 이상일 때 해결 방법</p>
+        <ul>
+          <li>@Autowired 필드 명 매칭</li>
+          <li>@Qualifying => @Qualifying끼리 매칭 => 빈 이름 매칭</li>
+          <li>@Primary 사용</li>
+        </ul>
+        <p style="font-size: 20px;">1. @Autowired 필드 명 매칭</p>
+        <p>@Autowired는 타입 매칭을 시도하고, 이때 여러 빈이 있으면 빌드 이름, 파라미터 이름으로 빈 이름을 추가 매칭한다.<br>
+        필드 명 매칭은 먼저 타입 매칭을 시도하고 그 결과에 여러 빈이 있을 때 추가로 동작하는 기능이다.</p>
+        <p>@Autowired 매칭 정리</p>
+        <ul>
+          <li>1. 타입 매칭</li>
+          <li>2. 타입 매칭의 결과가 2개 이상일 때 필드명, 파라미터 명으로 빈 이름 매칭</li>
+        </ul>
+        <p style="font-size: 20px;">2. @Qualifier 사용</p>
+        <p>@Qualifier는 추가 구분자를 붙여주는 방법이다. 주입 시 추가적인 방법을 제공하는 것이지 빈 이름을 변경하는 것은 아니다.</p>
+        <p>빈 등록 시 @Qualifier를 붙여 준다.</p>
+        <xmp class="code-text">
+@Component
+@Qualifier("mainDiscountPolicy")
+public class RateDiscountPolicy implements DiscountPolicy {}
+
+@Component
+@Qualifier("fixDiscountPolicy")
+public class FixDiscountPolicy implements DiscountPolicy {}
+        </xmp>
+        <p>주입 시에 @Qualifier를 붙여주고 등록한 이름을 적어준다.</p>
+        <xmp class="code-text">
+//생성자 자동 주입 예시
+@Autowired
+public OrderServiceImpl(MemberRepository memberRepository,
+    @Qualifier("mainDiscountPolicy") DiscountPolicy discountPolicy) {
+    this.memberRepository = memberRepository;
+    this.discountPolicy = discountPolicy;
+}
+
+//수정자 자동 주입 예시
+@Autowired
+public DiscountPolicy setDiscountPolicy(@Qualifier("mainDiscountPolicy") 
+DiscountPolicy discountPolicy) {
+    this.discountPolicy = discountPolicy;
+}
+        </xmp>
+        <p>@Qualifier로 주입할 때 @Qualifier("mainDiscountPolicy")를 못찾으면 mainDiscountPolicy라는 이름의 스프링 빈을 추가로 찾는다.<br>
+        하지만 @Qualifier는 @Qualifier를 찾는 용도로만 사용하는게 명확하고 좋다.<br>
+        직접 빈 등록시에도 @Qualifier를 동일하게 사용할 수 있다.</p>
+        <p>@Qualifier 정리</p>
+        <ul>
+          <li>1. @Qualifier끼리 매칭</li>
+          <li>2. 빈 이름 매칭</li>
+          <li>3. NoSuchBeanDefinitionException 예외 발생</li>
+        </ul>
+        <p style="font-size: 20px;">3. @Primary 사용</p>
+        <p>@Primary는 우선순위를 정하는 방법이다.<br>
+        @Autowired시에 여러 빈이 매칭되면 @Primary가 우선권을 가진다.<br>
+        @Primary와 @Qualifier중에 어떤 것을 사용하면 좋을까?<br>
+        @Qualifier의 단점은 주입 받을 때 모든 코드에 @Qualifier를 붙여주어야 한다는 점이다.<br>
+        반면에 @Primary를 사용하면 한번만 붙이면 된다.</p>
+        <p>
+          <strong>@Primary, @Qualifier 활용</strong><br>
+          메인 데이터베이스의 커넥션을 획득하는 스프링 빈은 @Primary를 적용해서 조회하는 곳에서 @Qualifier 지정 없이 편리하게 조회하고, 서브 데이터베이스 커넥션 빈을 획득 할 때는 @Qualifier를 지정해서 명시적으로 획득하는 방식으로 사용하면 코드를 깔끔하게 유지할 수 있다.<br>
+          물론 이때 메인 데이터베이스의 스프링 빈을 등록할 때 #Qualifier를 지정해주는 것은 상관없다.
+        </p>
+        <p>
+          <strong>우선순위</strong><br>
+          @Primary 는 기본값 처럼 동작하는 것이고, @Qualifier 는 매우 상세하게 동작한다.<br>
+          스프링은 자동보다는 수동이, 넒은 범위의 선택권 보다는 좁은 범위의 선택권이 우선 순위가 높다.<br>
+          따라서 여기서도 @Qualifier 가 우선권이 높다.
+        </p>
+        <h4 class="code-head">조회한 빈이 모두 필요할 때 (List, Map)</h4>
+        <p>
+          의도적으로 해당 타입의 스프링 빈이 다 필요한 경우도 있다.<br>
+          예를 들어서 할인 서비스를 제공하는데, 클라이언트가 할인의 종류(rate, fix)를 선택할 수 있다고 가정해보자.<br>
+          스프링을 사용하면 소위 말하는 전략 패턴을 매우 간단하게 구현할 수 있다.
+        </p>
+        <xmp class="code-text">
+public class AllBeanTest {
+    @Test
+    void findAllBean() {
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class, DiscountService.class);
+        DiscountService discountService = ac.getBean(DiscountService.class);
+        Member member = new Member(1L, "userA", Grade.VIP);
+        int discountPrice = discountService.discount(member, 10000, "fixDiscountPolicy");
+        
+        assertThat(discountService).isInstanceOf(DiscountService.class);
+        assertThat(discountPrice).isEqualTo(1000);
+    }
+        static class DiscountService {
+            private final Map<String, DiscountPolicy> policyMap;
+            private final List<DiscountPolicy> policies;
+        
+        public DiscountService(Map<String, DiscountPolicy> policyMap, List<DiscountPolicy> policies) {
+            this.policyMap = policyMap;
+            this.policies = policies;
+            System.out.println("policyMap = " + policyMap);
+            System.out.println("policies = " + policies);
+        }
+        
+        public int discount(Member member, int price, String discountCode) {
+            DiscountPolicy discountPolicy = policyMap.get(discountCode);
+
+            System.out.println("discountCode = " + discountCode);
+            System.out.println("discountPolicy = " + discountPolicy);
+
+            return discountPolicy.discount(member, price);
+        }
+    }
+}
+        </xmp>
+        <p><strong>로직 분석</strong></p>
+        <ul>
+          <li>DiscountService는 Map으로 모든 DiscountPolicy 를 주입받는다. 이때 fixDiscountPolicy , rateDiscountPolicy 가 주입된다.</li>
+          <li>discount () 메서드는 discountCode로 "fixDiscountPolicy"가 넘어오면 map에서
+            fixDiscountPolicy 스프링 빈을 찾아서 실행한다. 물론 “rateDiscountPolicy”가 넘어오면
+            rateDiscountPolicy 스프링 빈을 찾아서 실행한다.</li>
+        </ul>
+        <p><strong>주입 분석</strong></p>
+        <ul>
+          <li>Map<String, DiscountPolicy> : map의 키에 스프링 빈의 이름을 넣어주고, 그 값으로
+            DiscountPolicy 타입으로 조회한 모든 스프링 빈을 담아준다.</li>
+          <li>List<DiscountPolicy> : DiscountPolicy 타입으로 조회한 모든 스프링 빈을 담아준다.</li>
+          <li>만약 해당하는 타입의 스프링 빈이 없으면, 빈 컬렉션이나 Map을 주입한다.</li>
+        </ul>
+        <h4 class="code-head">자동, 수동의 올바른 실무 운영 기준</h4>
+        <p>
+          <strong>편리한 자동 기능을 기본으로 사용</strong><br>
+          스프링이 나오고 시간이 갈 수록 점점 자동을 선호하는 추세다. 스프링은 @Component 뿐만 아
+          니라 @Controller , @Service , @Repository 처럼 계층에 맞추어 일반적인 애플리케이션 로직을 자동으로 스
+          캔할 수 있도록 지원한다.<br>
+          거기에 더해서 최근 스프링 부트는 컴포넌트 스캔을 기본으로 사용하고, 스프링 부트의 다양
+          한 스프링 빈들도 조건이 맞으면 자동으로 등록하도록 설계했다.
+        </p>
+        <p>
+          설정 정보를 기반으로 애플리케이션을 구성하는 부분과 실제 동작하는 부분을 명확하게 나누는 것이 이상적이지만, 개
+          발자 입장에서 스프링 빈을 하나 등록할 때 @Component 만 넣어주면 끝나는 일을 @Configuration 설정 정보에
+          가서 @Bean 을 적고, 객체를 생성하고, 주입할 대상을 일일이 적어주는 과정은 상당히 번거롭다.<br>
+          또 관리할 빈이 많아서 설정 정보가 커지면 설정 정보를 관리하는 것 자체가 부담이 된다.<br>
+          그리고 결정적으로 자동 빈 등록을 사용해도 OCP, DIP를 지킬 수 있다.
+        </p>
+        <p>
+          <strong>수동 빈 등록을 사용하면 좋은 경우</strong><br><br>
+          애플리케이션은 크게 업무 로직과 기술 지원 로직으로 나눌 수 있다.
+          <ul>
+            <li><strong>업무 로직 빈:</strong> 웹을 지원하는 컨트롤러, 핵심 비즈니스 로직이 있는 서비스, 데이터 계층의 로직을 처리하는 리포
+              지토리등이 모두 업무 로직이다. 보통 비즈니스 요구사항을 개발할 때 추가되거나 변경된다.</li>
+            <li><strong>기술 지원 빈:</strong> 기술적인 문제나 공통 관심사(AOP)를 처리할 때 주로 사용된다. 데이터베이스 연결이나, 공통 로그
+              처리 처럼 업무 로직을 지원하기 위한 하부 기술이나 공통 기술들이다.</li>
+            <li>업무 로직은 숫자도 매우 많고, 한번 개발해야 하면 컨트롤러, 서비스, 리포지토리 처럼 어느정도 유사한 패턴이
+              있다. 이런 경우 자동 기능을 적극 사용하는 것이 좋다. 보통 문제가 발생해도 어떤 곳에서 문제가 발생했는지 명
+              확하게 파악하기 쉽다.</li>
+            <li>기술 지원 로직은 업무 로직과 비교해서 그 수가 매우 적고, 보통 애플리케이션 전반에 걸쳐서 광범위하게 영향을
+              미친다. 그리고 업무 로직은 문제가 발생했을 때 어디가 문제인지 명확하게 잘 드러나지만, 기술 지원 로직은 적용
+              이 잘 되고 있는지 아닌지 조차 파악하기 어려운 경우가 많다. 그래서 이런 기술 지원 로직들은 가급적 수동 빈 등
+              록을 사용해서 명확하게 드러내는 것이 좋다.</li>
+          </ul>
+          <p>
+            <strong>애플리케이션에 광범위하게 영향을 미치는 기술 지원 객체는 수동 빈으로 등록해서 딱! 설정 정보에 바로 나타나게 하는
+              것이 유지보수 하기 좋다.</strong>
+          </p>
+        </p>
+        <p>
+          <strong>정리</strong>
+          <ul>
+            <li>편리한 자동 기능을 기본으로 사용</li>
+            <li>직접 등록하는 기술 지원 객체는 수동 등록</li>
+            <li>다형성을 적극 활용하는 비즈니스 로직은 수동 등록 고민</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  function goBack(){
+    window.history.back();
+  }
+</script>
+</body>
+</html>
