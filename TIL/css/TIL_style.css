@@ -231,6 +231,11 @@ pre {
 figure {
   margin: 0 0 1rem; }
 
+.img_container {
+  display: flex;
+  justify-content: center;
+}
+
 img {
   vertical-align: middle;
   border-style: none; }
