@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../css/TIL_style.css">
+  <title>Title</title>
+</head>
+<body>
+  <section class="ftco-section">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center mb-5">
+        <h2 class="heading-section">2024년 5월 22일</h2>
+      </div>
+    </div>
+    <div class="remote"><button onclick="goBack()" class="btn btn-primary">뒤로가기</button></div>
+    <div class="position-center">
+      <div class="code-area">
+        <h4 class="code-head">프로토타입 스코프 - 싱글톤 빈과 함께 사용시 Provider로 문제 해결</h4>
+        <p>
+          싱글톤 빈과 프로토타입 빈을 함께 사용할 때, 어떻게 하면 사용할 때 마다 항상 새로운 프로토타입 빈을 생성할 수 있을까?
+        </p>
+        <p style="font-size: 20px;"><strong>스프링 컨테이너에 요청</strong></p>
+        <p>
+          가장 간단한 방법은 싱글톤 빈이 프로토타입을 사용할 때 마다 스프링 컨테이너에 새로 요청하는 것이다.
+        </p>
+        <xmp class="code-text">
+public class PrototypeProviderTest {
+    @Test
+    void providerTest() {
+        AnnotationConfigApplicationContext ac = new
+        AnnotationConfigApplicationContext(ClientBean.class, PrototypeBean.class);
+
+        ClientBean clientBean1 = ac.getBean(ClientBean.class);
+        int count1 = clientBean1.logic();
+        assertThat(count1).isEqualTo(1);
+
+        ClientBean clientBean2 = ac.getBean(ClientBean.class);
+        int count2 = clientBean2.logic();
+        assertThat(count2).isEqualTo(1);
+    }
+
+    static class ClientBean {
+
+        @Autowired
+        private ApplicationContext ac;
+
+        public int logic() {
+            PrototypeBean prototypeBean = ac.getBean(PrototypeBean.class);
+            prototypeBean.addCount();
+            int count = prototypeBean.getCount();
+            return count;
+        }
+    }
+
+    @Scope("prototype")
+    static class PrototypeBean {
+
+        private int count = 0;
+
+        public void addCount() {
+            count++;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        @PostConstruct
+        public void init() {
+            System.out.println("PrototypeBean.init " + this);
+        }
+
+        @PreDestroy
+        public void destroy() {
+            System.out.println("PrototypeBean.destroy");
+        }
+    }
+}
+        </xmp>
+        <p>
+          <ul>
+            <li>실행해보면 ac.getBean() 을 통해서 항상 새로운 프로토타입 빈이 생성되는 것을 확인할 수 있다.</li>
+            <li>의존관계를 외부에서 주입(DI) 받는게 아니라 이렇게 직접 필요한 의존관계를 찾는 것을 Dependency Lookup 
+              (DL) 의존관계 조회(탐색) 이라한다.</li>
+            <li>그런데 이렇게 스프링의 애플리케이션 컨텍스트 전체를 주입받게 되면, 스프링 컨테이너에 종속적인 코드가 되고, 
+              단위 테스트도 어려워진다.</li>
+            <li>지금 필요한 기능은 지정한 프로토타입 빈을 컨테이너에서 대신 찾아주는 딱! DL 정도의 기능만 제공하는 무언가
+              가 있으면 된다.</li>
+          </ul>
+        </p>
+        <p style="font-size: 20px;"><strong>ObjectFactory, ObjectProvider</strong></p>
+        <p>
+          지정한 빈을 컨테이너에서 대신 찾아주는 DL 서비스를 제공하는 것이 바로 ObjectProvider이다.
+          참고로 과거에는 ObjectFactory가 있었는데, 여기에 편의 기능을 추가해서 ObjectProvider가 만들어졌다.
+        </p>
+        <xmp class="code-text">
+@Autowired
+private ObjectProvider<PrototypeBean> prototypeBeanProvider;
+
+public int logic() {
+    PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
+    prototypeBean.addCount();
+    int count = prototypeBean.getCount();
+    return count;
+}
+        </xmp>
+        <p>
+          <ul>
+            <li>실행해보면 prototypeBeanProvider.getObject() 을 통해서 항상 새로운 프로토타입 빈이 생성되는 것
+              을 확인할 수 있다.</li>
+            <li>ObjectProvider 의 getObject() 를 호출하면 내부에서는 스프링 컨테이너를 통해 해당 빈을 찾아서 반환
+              한다. (DL)</li>
+            <li>스프링이 제공하는 기능을 사용하지만, 기능이 단순하므로 단위테스트를 만들거나 mock 코드를 만들기는 훨씬
+              쉬워진다.
+              </li>
+            <li>ObjectProvider 는 지금 딱 필요한 DL 정도의 기능만 제공한다.</li>
+          </ul>
+        </p>
+        <p>
+          <strong>특징</strong><br>
+          <ul>
+            <li>ObjectFactory: 기능이 단순, 별도의 라이브러리 필요 없음, 스프링에 의존</li>
+            <li>ObjectProvider: ObjectFactory 상속, 옵션, 스트림 처리등 편의 기능이 많고, 별도의 라이브러리 필요 없음, 
+              스프링에 의존</li>
+          </ul>
+        </p>
+        <p style="font-size: 20px;"><strong>JSR-330 Provider</strong></p>
+        <p>
+          마지막 방법은 javax.inject.Provider라는 JSR-330 자바 표준을 사용하는 방법이다.
+          스프링 부트 3.0은 jakarta.inject.Provider 사용한다.
+        </p>
+        <xmp class="code-text">
+@Autowired
+private Provider<PrototypeBean> provider;
+
+public int logic() {
+    PrototypeBean prototypeBean = provider.get();
+    prototypeBean.addCount();
+    int count = prototypeBean.getCount();
+    return count;
+}
+        </xmp>
+        <p>
+          <ul>
+            <li>실행해보면 provider.get() 을 통해서 항상 새로운 프로토타입 빈이 생성되는 것을 확인할 수 있다.</li>
+            <li>provider 의 get() 을 호출하면 내부에서는 스프링 컨테이너를 통해 해당 빈을 찾아서 반환한다. (DL)</li>
+            <li>자바 표준이고, 기능이 단순하므로 단위테스트를 만들거나 mock 코드를 만들기는 훨씬 쉬워진다.</li>
+            <li>Provider 는 지금 딱 필요한 DL 정도의 기능만 제공한다.</li>
+          </ul>
+        </p>
+        <p>
+          <strong>특징</strong><br>
+          <ul>
+            <li>get() 메서드 하나로 기능이 매우 단순하다.</li>
+            <li>별도의 라이브러리가 필요하다.</li>
+            <li>자바 표준이므로 스프링이 아닌 다른 컨테이너에서도 사용할 수 있다.</li>
+          </ul>
+        </p>
+        <p>
+          <strong>정리</strong><br>
+          <ul>
+            <li>그러면 프로토타입 빈을 언제 사용할까? 매번 사용할 때 마다 의존관계 주입이 완료된 새로운 객체가 필요하면 사
+              용하면 된다. 그런데 실무에서 웹 애플리케이션을 개발해보면, 싱글톤 빈으로 대부분의 문제를 해결할 수 있기 때
+              문에 프로토타입 빈을 직접적으로 사용하는 일은 매우 드물다.</li>
+            <li>ObjectProvider , JSR330 Provider 등은 프로토타입 뿐만 아니라 DL이 필요한 경우는 언제든지 사용할
+              수 있다.</li>
+          </ul>
+        </p>
+        <p>
+          ObjectProvider는 DL을 위한 편의 기능을 많이 제공해주고 스프링 외에 별도의 의존관계 추가가 필요 없기 때문에 편리하다. 
+          만약(정말 그럴일은 거의 없겠지만) 코드를 스프링이 아닌 다른 컨테이너에서도 사용할 수 있어야 한다면 JSR-330 Provider를 사용해야한다.<br>
+          스프링을 사용하다 보면 이 기능 뿐만 아니라 다른 기능들도 자바 표준과 스프링이 제공하는 기능이 겹칠때가 많이 있다. 
+          대부분 스프링이 더 다양하고 편리한 기능을 제공해주기 때문에, 특별히 다른 컨테이너를 사용할 일이 없다면, 스프링이 제공하는 기능을 사용하면 된다.
+        </p>
+        <h4 class="code-head">웹 스코프</h4>
+        <p>지금까지 싱글톤과 프로토타입 스코프를 알아봤다. 싱글톤은 스프링 컨테이너의 시작과 끝까지 함께하는 매우 긴
+          스코프이고, 프로토타입은 생성과 의존관계 주입, 그리고 초기화까지만 진행하는 특별한 스코프이다.<br>
+          이번에는 웹 스코프에 대해서 알아보자.
+        </p>
+        <p>
+          <strong>웹 스코프의 특징</strong><br>
+          <ul>
+            <li>웹 스코프는 웹 환경에서만 동작한다.</li>
+            <li>웹 스코프는 프로토타입과 다르게 스프링이 해당 스코프의 종료시점까지 관리한다. 따라서 종료
+              메서드가 호출된다.
+            </li>
+          </ul>
+        </p>
+        <p>
+          <strong>웹 스코프 종류</strong><br>
+          <ul>
+            <li><strong>request: </strong> HTTP 요청 하나가 들어오고 나갈 때 까지 유지되는 스코프, 각각의 HTTP 요청마다 별도의 빈 인스턴스가 생성되고, 관리된다.</li>
+            <li><strong>session: </strong> HTTP Session과 동일한 생명주기를 가지는 스코프</li>
+            <li><strong>application: </strong> 서블릿 컨텍스트(ServletContext)와 동일한 생명주기를 가지는 스코프</li>
+            <li><strong>websocket: </strong> 웹 소켓과 동일한 생명주기를 가지는 스코프</li>
+          </ul>
+        </p>
+        <h4 class="code-head">스코프와 프록시</h4>
+        <p>
+          <strong>동작 정리</strong><br>
+          <ul>
+            <li>CGLIB라는 라이브러리로 내 클래스를 상속 받은 가짜 프록시 객체를 만들어서 주입한다.</li>
+            <li>이 가짜 프록시 객체는 실제 요청이 오면 그때 내부에서 실제 빈을 요청하는 위임 로직이 들어있다.</li>
+            <li>가짜 프록시 객체는 실제 request scope와는 관계가 없다. 그냥 가짜이고, 내부에 단순한 위임 로직만 있고, 싱글톤 처럼 동작한다.</li>
+          </ul>
+        </p>
+        <p>
+          <strong>특징 정리</strong><br>
+          <ul>
+            <li>프록시 객체 덕분에 클라이언트는 마치 싱글톤 빈을 사용하듯이 편리하게 request scope를 사용할 수 있다.</li>
+            <li>사실 Provider를 사용하든, 프록시를 사용하든 핵심 아이디어는 진짜 객체 조회를 꼭 필요한 시점까지 지연처리 한다는 점이다.</li>
+            <li>단지 애노테이션 설정 변경만으로 원본 객체를 프록시 객체로 대체할 수 있다. 이것이 바로 다형성과 DI 컨테이너가 가진 큰 강점이다.</li>
+            <li>꼭 웹 스코프가 아니어도 프록시는 사용할 수 있다.</li>
+          </ul>
+        </p>
+        <p>
+          <strong>주의점</strong><br>
+          <ul>
+            <li>마치 싱글톤을 사용하는 것 같지만 다르게 동작하기 때문에 결국 주의해서 사용해야 한다.</li>
+            <li>이런 특별한 scope는 꼭 필요한 곳에만 최소화해서 사용하자. 무분별하게 사용하면 유지보수하기 어려워진다.</li>
+          </ul>
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+<script>
+  function goBack(){
+    window.history.back();
+  }
+</script>
+</body>
+</html>
